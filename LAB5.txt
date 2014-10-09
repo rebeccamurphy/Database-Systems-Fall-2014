@@ -1,0 +1,9 @@
+1)
+
+select distinct a.city
+from customers cust
+	join orders ord
+	on ord.cid = cust.cid
+	join agents a
+	on ord.aid = a.aid
+where cust.name = 'Tiptop'

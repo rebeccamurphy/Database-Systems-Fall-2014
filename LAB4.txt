@@ -2,7 +2,7 @@ LAB 4
 
 1)  Get the cities  of  agents  booking an  order   for customer    “TipTop”.   
 
-select city 
+select distinct city 
 from agents
 where aid in (
     select aid from 
