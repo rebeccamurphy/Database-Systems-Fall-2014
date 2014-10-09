@@ -7,3 +7,62 @@ from customers cust
 	join agents a
 	on ord.aid = a.aid
 where cust.name = 'Tiptop'
+
+2) 
+
+select distinct ord2.pid
+from orders ord
+join customers cust
+on cust.city= 'Kyoto'
+and ord.cid = cust.cid
+join orders ord2
+on ord.aid = ord2.aid
+
+3)
+
+select cust.name
+from customers cust
+except (
+	select ord.cid
+	from orders ord
+)
+
+4)
+
+select cust.name
+from customers cust
+full outer join orders ord
+on cust.cid = ord.cid
+where ord is null
+
+5)
+
+select cust.name, a.name
+from customers cust
+join agents a
+on a.city = cust.city
+join orders ord
+on ord.aid = a.aid
+and cust.cid = ord.cid
+
+6)
+
+select cust.name, a.name, cust.city, a.city
+from customers cust
+join agents a
+on a.city = cust.city
+
+7)
+
+select cust.name, cust.city
+from customers cust
+join (
+	select p.city, count(p.city) num
+	from products p
+	group by p.city
+	order by num
+	limit 1
+) pop
+on cust.city = pop.city
+order by num
+	
