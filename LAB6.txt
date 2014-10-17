@@ -1,0 +1,46 @@
+1)
+select name, city
+from customers 
+where city in(
+	select city from
+	product_count
+	where num =(
+		select num
+		from product_count
+		limit 1
+	)
+)
+
+2)
+create view product_count as 
+select p.city, count(p.city) as num
+from products p
+group by p.city
+order by num desc;
+
+select name, city
+from customers 
+where city in(
+	select city from
+	product_count
+	where num =(
+		select num
+		from product_count
+		limit 1
+	)
+);
+
+3)
+select *
+from products
+where priceusd > (
+	select avg(p.priceusd) avgprice
+	from products p
+)
+
+4)
+select name, pid, dollars
+from orders ord
+join customers cust
+on ord.cid = cust.cid
+order by dollars desc
