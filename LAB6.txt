@@ -44,3 +44,28 @@ from orders ord
 join customers cust
 on ord.cid = cust.cid
 order by dollars desc
+
+5)
+select cust.name, coalesce (x.ordSum, 0.00)
+from customers cust
+left join 
+(select ord.cid, sum(ord.dollars) ordSum
+from orders ord
+group by ord.cid)  as x
+on x.cid = cust.cid
+order by cust.name
+
+6)
+select cust.name, p.name, a.name
+from orders ord
+left join 
+agents a
+on a.city = 'New York'
+and a.aid = ord.aid
+left join 
+customers cust
+on ord.cid = cust.cid
+left join
+products p
+on ord.pid = p.pid
+where a.city = 'New York'
