@@ -69,3 +69,12 @@ left join
 products p
 on ord.pid = p.pid
 where a.city = 'New York'
+
+7)
+select ord.*
+from orders ord
+join products p
+on p.pid = ord.pid
+join customers cust
+on cust.cid = ord.cid
+where ord.dollars !=((ord.qty * p.priceusd)-((ord.qty * p.priceusd)*(cust.discount *.01)))
