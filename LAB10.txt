@@ -1,0 +1,28 @@
+LAB 10
+1)
+Drop function prereqsfor(integer);
+CREATE OR REPLACE FUNCTION PreReqsFor(cn integer)
+RETURNS SETOF Courses as $$
+begin
+  return query 
+  select * from Courses
+  where num in (
+	select p.preReqNum from prerequisites as p
+	where cn = p.courseNum
+  );
+end;
+$$ LANGUAGE 'plpgsql';
+
+2)
+drop function isprereqfor(integer);
+CREATE OR REPLACE FUNCTION IsPreReqFor(cn integer)
+RETURNS SETOF Courses as $$
+begin
+  return query 
+  select * from Courses
+  where num in (
+	select p.courseNum from prerequisites as p
+	where cn = p.prereqNum
+  );
+end;
+$$ LANGUAGE 'plpgsql';
