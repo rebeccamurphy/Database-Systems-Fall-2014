@@ -325,6 +325,7 @@ order by m.name;
 END;
 $$ LANGUAGE plpgsql;
 
+--set user permissions--
 CREATE ROLE Admin
 GRANT SELECT, INSERT, UPDATE, ALTER
 ON ALL TABLES IN SCHEMA PUBLIC
@@ -336,24 +337,75 @@ GRANT SELECT
 ON ALL TABLES IN SCHEMA PUBLIC
 TO User;
 
-drop trigger if exists  check_year_listener on Troupes;
-drop function if exists checkYear();
-CREATE FUNCTION checkYear() RETURNS trigger AS $$
+--create triggers--
+/*
+drop function if exists checkNums();
+CREATE FUNCTION checkNums() RETURNS trigger AS $$
     BEGIN
         -- Check that empname and salary are given
-        IF (TG_TABLE_NAME= 'Comedians') THEN
-	        IF (NEW.YearFirstActive <0) THEN
-	            RAISE EXCEPTION 'Years cannot be negative cannot be null';
-	        END IF;
-	    ENDIF;
-	    IF (TG_TABLE_NAME= 'Troupes') THEN
-	        IF (NEW.YearCreated <0) THEN
-	            RAISE EXCEPTION 'Years cannot be negative cannot be null';
-	        END IF;
-	    ENDIF;
+        IF (TG_TABLE_NAME= 'Comedians' AND (NEW.YearFirstActive <0 OR NEW.YearLastActive <0)) THEN
+	        RAISE EXCEPTION 'Years cannot be negative.';
+	    END IF;
+
+	    IF (TG_TABLE_NAME= 'Troupes' AND (NEW.YearCreated <0 OR NEW.YearEnded <0)) THEN
+	            RAISE EXCEPTION 'Years cannot be negative.';
+	    END IF;
+	    
+	    IF (TG_TABLE_NAME= 'Media' AND (NEW.YearReleased <0)) THEN
+	            RAISE EXCEPTION 'Years cannot be negative.';
+	    END IF;
+	    
+	    IF (TG_TABLE_NAME= 'RadioSeries' AND (NEW.YearEnded <0 OR NEW.NumSeasons <0 OR New.NumEpisodes <0 OR New.AvgEpisodeLengthMin)) THEN
+	            RAISE EXCEPTION 'Numbers in this function cannot be negative.';
+	    END IF;
+	    IF (TG_TABLE_NAME= 'Albums' AND (NEW.NumTracks < 1 OR New.LengthMins <1)) THEN
+	            RAISE EXCEPTION 'Cannot have value thats less than one for number of tracks or length in minutes.';
+	    END IF;
+	    IF (TG_TABLE_NAME= 'Books' AND NEW.PageCount < 1) THEN
+	            RAISE EXCEPTION 'Cannot have value thats less than one for number of pages.';
+	    END IF;
+	    IF (TG_TABLE_NAME= 'TVShows' AND (NEW.LengthMins < 0 OR New.AvgReviewPercent <0)) THEN
+	            RAISE EXCEPTION 'Cannot have a negative value for numbers.';
+	    END IF;
+	    IF (TG_TABLE_NAME= 'Movies' AND NEW.LengthMins < 1) THEN
+	        RAISE EXCEPTION 'Cannot have value thats less than one for length in minutes.';
+	    END IF;
+	    IF (TG_TABLE_NAME= 'StandUpShows' AND NEW.LengthMins < 1) THEN
+	            RAISE EXCEPTION 'Cannot have value thats less than one for length in minutes.';
+	    END IF;
         RETURN NEW;
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER check_year_listener BEFORE INSERT OR UPDATE ON Comedians
-    FOR EACH ROW EXECUTE PROCEDURE checkYear();
+drop trigger if exists  check_nums_listener on Troupes;
+drop trigger if exists  check_nums_listener on Comedians;
+drop trigger if exists  check_nums_listener on Media;
+drop trigger if exists  check_nums_listener on Books;
+drop trigger if exists  check_nums_listener on RadioSeries;
+drop trigger if exists  check_nums_listener on Albums;
+drop trigger if exists  check_nums_listener on TVShows;
+drop trigger if exists  check_nums_listener on Movies;
+drop trigger if exists  check_nums_listener on StandUpShows;
+CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON Comedians
+    EXECUTE PROCEDURE checkNums();
+CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON Troupes
+    EXECUTE PROCEDURE checkNums();
+CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON Media
+    EXECUTE PROCEDURE checkNums();
+CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON Books
+    EXECUTE PROCEDURE checkNums();
+CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON RadioSeries
+    EXECUTE PROCEDURE checkNums();
+CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON Albums
+    EXECUTE PROCEDURE checkNums();
+CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON TVShows
+    EXECUTE PROCEDURE checkNums();
+CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON Movies
+    EXECUTE PROCEDURE checkNums();
+CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON StandUpShows
+    EXECUTE PROCEDURE checkNums();
+*/
+
+
+
+
