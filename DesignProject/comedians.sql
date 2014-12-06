@@ -325,17 +325,6 @@ order by m.name;
 END;
 $$ LANGUAGE plpgsql;
 
---set user permissions--
-CREATE ROLE Admin
-GRANT SELECT, INSERT, UPDATE, ALTER
-ON ALL TABLES IN SCHEMA PUBLIC
-TO Admin;
-
-
-CREATE ROLE User
-GRANT SELECT
-ON ALL TABLES IN SCHEMA PUBLIC
-TO User;
 
 --create triggers--
 /*
@@ -407,5 +396,20 @@ CREATE TRIGGER check_nums_listener BEFORE INSERT OR UPDATE ON StandUpShows
 */
 
 
+drop trigger if exists delete_relation_listener on BelongsTo;
+drop function if exists delete_listener();
+drop table if exists quit_troupe;
 
-
+create table quit_troupe (
+	CID		 	 CHAR(8)	 NOT NULL,
+	TID		 	 CHAR(8)	 NOT NULL
+);
+	
+create function delete_listener() returns trigger as $$
+begin
+    insert into quit_troupe values (old.CID, old.TID);
+  return null;
+end;
+$$ language plpgsql;
+create trigger delete_relation_listener after delete on BelongsTo
+  for each row execute procedure delete_listener();
